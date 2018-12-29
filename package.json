@@ -6,5 +6,8 @@
   "repository": "git@github.com:asleepysamurai/yass-gen.git",
   "author": "Balaganesh Damodaran <asleepysamurai@gmail.com>",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "minimist": "^1.2.0"
+  }
 }
