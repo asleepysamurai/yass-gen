@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Yass-Gen Entry Point
  */
