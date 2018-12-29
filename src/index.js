@@ -26,7 +26,7 @@ async function yass() {
         templateName
     });
 
-    await transform(fileMap);
+    await transform(fileMap, outDir);
 };
 
 if (require.main == module)

@@ -16,6 +16,7 @@ const defaultDirs = {
 const yassFileExtension = 'yass';
 const templateFileExtension = 'hbs';
 const templateFileName = '_template_';
+const outputFileExtension = 'html';
 
 async function getTemplateDir(templateDir, templateName = 'default', throwCustomError) {
     try {
@@ -86,8 +87,8 @@ async function buildFileMap(opts) {
     const templateDir = await getTemplateDir(path.resolve(inDir, './templates'), templateName, true);
 
     let fileMap = {
-        otherFiles: {},
-        templateFiles: {}
+        copyFiles: [],
+        templateFiles: []
     };
 
     await walkDir(dataDir, async (item, relativePath, isDir) => {
@@ -96,7 +97,10 @@ async function buildFileMap(opts) {
             const filePath = path.resolve(dataDir, relativePath, item);
 
             if (extension !== yassFileExtension) {
-                fileMap.otherFiles[filePath] = path.resolve(outDir, relativePath, item);
+                fileMap.copyFiles.push({
+                    src: filePath,
+                    dest: path.resolve(outDir, relativePath, item)
+                });
                 return;
             }
 
@@ -105,7 +109,26 @@ async function buildFileMap(opts) {
             if (!templateFile)
                 throw new Error(`No matching template found for ${filePath}`);
 
-            fileMap.templateFiles[filePath] = templateFile;
+            fileMap.templateFiles.push({
+                src: filePath,
+                template: templateFile,
+                dest: path.resolve(outDir, relativePath, item.replace(/\.([^.]*)$/, `.${outputFileExtension}`))
+            });
+        }
+    });
+
+    await walkDir(templateDir, async (item, relativePath, isDir) => {
+        if (!isDir) {
+            const extension = (item.match(/\.([^.]*)$/) || [])[1];
+            const filePath = path.resolve(templateDir, relativePath, item);
+
+            if (extension !== templateFileExtension) {
+                fileMap.copyFiles.push({
+                    src: filePath,
+                    dest: path.resolve(outDir, relativePath, item)
+                });
+                return;
+            }
         }
     });
 

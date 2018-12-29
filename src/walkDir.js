@@ -28,7 +28,7 @@ async function walkDir(dir, onItem, rootDir) {
         await Promise.resolve(onItem(item, pathRelativeToRoot, isDir));
 
         if (isDir)
-            await walkDir(filePath, onItem, dir);
+            await walkDir(filePath, onItem, rootDir || dir);
     }));
 };
 
