@@ -3,10 +3,6 @@
  * to static html files in output directory
  */
 
-const buildFileMap = require('./buildFileMap');
-
-async function transform(opts) {
-    const fileMap = await buildFileMap(opts);
-};
+async function transform(opts) {};
 
 module.exports = transform;

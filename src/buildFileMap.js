@@ -85,21 +85,27 @@ async function buildFileMap(opts) {
     const dataDir = path.resolve(inDir, './data');
     const templateDir = await getTemplateDir(path.resolve(inDir, './templates'), templateName, true);
 
-    let fileMap = {};
+    let fileMap = {
+        otherFiles: {},
+        templateFiles: {}
+    };
 
     await walkDir(dataDir, async (item, relativePath, isDir) => {
         if (!isDir) {
             const extension = (item.match(/\.([^.]*)$/) || [])[1];
-            if (extension !== yassFileExtension)
+            const filePath = path.resolve(dataDir, relativePath, item);
+
+            if (extension !== yassFileExtension) {
+                fileMap.otherFiles[filePath] = path.resolve(outDir, relativePath, item);
                 return;
+            }
 
             const templateFile = await getTemplateFileForPath(item, relativePath, templateDir);
-            const filePath = path.resolve(dataDir, relativePath, item);
 
             if (!templateFile)
                 throw new Error(`No matching template found for ${filePath}`);
 
-            fileMap[filePath] = templateFile;
+            fileMap.templateFiles[filePath] = templateFile;
         }
     });
 

@@ -4,6 +4,7 @@
 
 const minimist = require('minimist');
 
+const buildFileMap = require('./buildFileMap');
 const transform = require('./transform');
 
 async function yass() {
@@ -19,11 +20,13 @@ async function yass() {
 
     const templateName = (opts.template || opts.t);
 
-    await transform({
+    const fileMap = await buildFileMap({
         inDir,
         outDir,
         templateName
     });
+
+    await transform(fileMap);
 };
 
 if (require.main == module)
