@@ -51,6 +51,15 @@ function getFileRefs(filePath, rootDir) {
     return { path: filePath, ext, name };
 };
 
+async function getDateRefs(filePath) {
+    const fileStat = await stat(filePath);
+
+    return {
+        updatedAt: fileStat.mtime.valueOf(),
+        compiledAt: Date.now()
+    };
+};
+
 /**
  * Reads content of files in directory
  *     -> Ignores any files starting with _
@@ -73,14 +82,14 @@ async function readDirItems(dataDir, rootDir) {
 
         const { attributes = {}, body } = await parseFile(filePath);
 
-        dirItems.push(Object.assign({ $file: getFileRefs(filePath, rootDir) }, attributes));
+        dirItems.push(Object.assign({ $file: getFileRefs(filePath, rootDir) }, { $date: await getDateRefs(filePath) }, attributes));
     }
 
     return dirItems;
 };
 
-function getRefs(dataFile, globalRefs, rootDir) {
-    return Object.assign({}, globalRefs, { $file: getFileRefs(dataFile, rootDir) });
+async function getRefs(dataFile, globalRefs, rootDir) {
+    return Object.assign({}, globalRefs, { $file: getFileRefs(dataFile, rootDir) }, { $date: await getDateRefs(dataFile) });
 };
 
 async function transformFile(templateFile, dataFile, outFile, globalRefs, rootDir) {
@@ -90,7 +99,7 @@ async function transformFile(templateFile, dataFile, outFile, globalRefs, rootDi
     const template = Handlebars.compile(templateString);
 
     const body = markdownToHTML(data.body);
-    const refs = getRefs(dataFile, globalRefs, rootDir);
+    const refs = await getRefs(dataFile, globalRefs, rootDir);
 
     const templateData = Object.assign({}, refs, data.attributes || {}, { '_page_content_': body });
     const outData = template(templateData);
