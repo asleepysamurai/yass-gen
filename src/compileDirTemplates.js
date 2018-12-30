@@ -12,6 +12,7 @@ const { promisify } = require('util');
 const mkdirp = promisify(require('mkdirp'));
 const path = require('path');
 const Showdown = require('showdown');
+const { minify } = require('html-minifier');
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -102,7 +103,15 @@ async function transformFile(templateFile, dataFile, outFile, globalRefs, rootDi
     const refs = await getRefs(dataFile, globalRefs, rootDir);
 
     const templateData = Object.assign({}, refs, data.attributes || {}, { '_page_content_': body });
-    const outData = template(templateData);
+
+    let outData = template(templateData);
+    outData = minify(outData, {
+        minifyCSS: true,
+        minifyJS: true,
+        collapseBooleanAttributes: true,
+        collapseWhitespace: true,
+        collapseInlineTagWhitespace: true
+    });
 
     await mkdirp(path.dirname(outFile));
     await writeFile(outFile, outData, { encoding: 'utf8' });
