@@ -6,7 +6,6 @@
  *         -> makes front matter available in $refs.dirList
  */
 
-const Handlebars = require('handlebars');
 const fs = require('fs');
 const frontmatter = require('front-matter');
 const { promisify } = require('util');
@@ -92,11 +91,11 @@ async function getRefs(dataFile, globalRefs, rootDir) {
     return Object.assign({}, globalRefs, { $file: getFileRefs(dataFile, rootDir) }, { $date: await getDateRefs(dataFile) });
 };
 
-async function transformFile(templateFile, dataFile, outFile, globalRefs, rootDir) {
+async function transformFile(templateFile, dataFile, outFile, globalRefs, rootDir, templateHandlebars) {
     const data = await parseFile(dataFile);
 
     const templateString = (await readFile(templateFile, { encoding: 'utf8' })).toString();
-    const template = Handlebars.compile(templateString);
+    const template = templateHandlebars.compile(templateString);
 
     const body = markdownToHTML(data.body);
     const refs = await getRefs(dataFile, globalRefs, rootDir);
@@ -116,13 +115,13 @@ async function readRefs(dataDir, rootDir) {
     return refs;
 };
 
-async function compileDirTemplates(dataDir, fileList, rootDir) {
+async function compileDirTemplates(dataDir, fileList, rootDir, templateHandlebars) {
     const refItems = await readRefs(dataDir, rootDir);
 
     while (fileList.length) {
         const parallelFileList = fileList.splice(0, maxParallelFiles);
         await Promise.all(parallelFileList.map(async (fileInfo) => {
-            return transformFile(fileInfo.template, fileInfo.src, fileInfo.dest, refItems, rootDir);
+            return transformFile(fileInfo.template, fileInfo.src, fileInfo.dest, refItems, rootDir, templateHandlebars);
         }));
     }
 };

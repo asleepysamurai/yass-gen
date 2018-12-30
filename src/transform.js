@@ -20,18 +20,18 @@ function sortTemplateFilesByDir(templateFiles) {
     return templateFilesByDir;
 };
 
-async function processTemplateFiles(templateFiles, dataDir) {
+async function processTemplateFiles(templateFiles, dataDir, templateHandlebars) {
     const templateFilesByDir = sortTemplateFilesByDir(templateFiles);
 
     for (let dir in templateFilesByDir) {
-        await compileDirTemplates(dir, templateFilesByDir[dir], dataDir);
+        await compileDirTemplates(dir, templateFilesByDir[dir], dataDir, templateHandlebars);
     }
 };
 
-async function transform(fileMap, dataDir) {
+async function transform(fileMap, dataDir, templateHandlebars) {
     const { copyFiles, templateFiles } = fileMap;
 
-    await processTemplateFiles(templateFiles, dataDir);
+    await processTemplateFiles(templateFiles, dataDir, templateHandlebars);
     await copyAllFiles(copyFiles);
 };
 

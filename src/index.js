@@ -8,6 +8,7 @@ const minimist = require('minimist');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
+const Handlebars = require('handlebars');
 
 const buildFileMap = require('./buildFileMap');
 const transform = require('./transform');
@@ -34,6 +35,13 @@ async function getTemplateDir(templateDir, templateName = 'default', throwCustom
     }
 };
 
+async function getTemplateHandlebars(templateDir) {
+    const templateHelpers = require(path.resolve(templateDir, '_helpers'));
+    templateHelpers(Handlebars);
+
+    return Handlebars;
+};
+
 async function yass() {
     try {
         const startTime = Date.now();
@@ -57,7 +65,9 @@ async function yass() {
             outDir
         });
 
-        await transform(fileMap, path.resolve(inDir, 'data'));
+        const templateHandlebars = await getTemplateHandlebars(templateDir);
+        await transform(fileMap, path.resolve(inDir, 'data'), templateHandlebars);
+
         console.log(`Yass-Gen Success! \nNew static site at ${path.resolve(outDir)} generated in ${Date.now()-startTime}ms. \nHave a good day!`);
     } catch (err) {
         console.log('Yass-Gen Failed! \n', err);
