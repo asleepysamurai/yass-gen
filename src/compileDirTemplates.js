@@ -81,7 +81,8 @@ async function readDirItems(dataDir, rootDir) {
 
         const { attributes = {}, body } = await parseFile(filePath);
 
-        dirItems.push(Object.assign({ $file: getFileRefs(filePath, rootDir) }, { $date: await getDateRefs(filePath) }, attributes));
+        if (attributes.$dontList !== true)
+            dirItems.push(Object.assign({ $file: getFileRefs(filePath, rootDir) }, { $date: await getDateRefs(filePath) }, attributes));
     }
 
     return dirItems;
