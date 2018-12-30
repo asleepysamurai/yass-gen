@@ -36,8 +36,13 @@ async function getTemplateDir(templateDir, templateName = 'default', throwCustom
 };
 
 async function getTemplateHandlebars(templateDir) {
-    const templateHelpers = require(path.resolve(templateDir, '_helpers'));
-    templateHelpers(Handlebars);
+    try {
+        const templateHelpers = require(path.resolve(templateDir, '_helpers'));
+        templateHelpers(Handlebars);
+    } catch (err) {
+        if (err.code !== 'MODULE_NOT_FOUND')
+            throw err;
+    }
 
     return Handlebars;
 };
