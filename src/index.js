@@ -37,7 +37,10 @@ async function getTemplateDir(templateDir, templateName = 'default', throwCustom
 
 async function getTemplateHandlebars(templateDir) {
     try {
-        const templateHelpers = require(path.resolve(templateDir, '_configure'));
+        const configureScriptPath = path.resolve(templateDir, '_configure');
+        const templateHelpers = require(configureScriptPath);
+
+        console.log(`Configuring template with configure script at ${configureScriptPath}`);
         await templateHelpers(Handlebars);
     } catch (err) {
         if (err.code !== 'MODULE_NOT_FOUND') {
