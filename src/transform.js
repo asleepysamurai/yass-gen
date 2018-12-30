@@ -3,19 +3,35 @@
  * to static html files in output directory
  */
 
-const compileTemplate = require('./compileTemplate');
+const path = require('path');
+
+const compileDirTemplates = require('./compileDirTemplates');
 const copyAllFiles = require('./copyFiles');
 
-async function processTemplateFiles(templateFiles) {
-    await Promise.all(templateFiles.map(async (templateFile) => {
-        return compileTemplate(templateFile.template, templateFile.src, templateFile.dest);
-    }));
+function sortTemplateFilesByDir(templateFiles) {
+    let templateFilesByDir = {};
+
+    templateFiles.forEach(item => {
+        const dirName = path.dirname(item.src);
+        templateFilesByDir[dirName] = templateFilesByDir[dirName] || [];
+        templateFilesByDir[dirName].push(item);
+    });
+
+    return templateFilesByDir;
 };
 
-async function transform(fileMap) {
+async function processTemplateFiles(templateFiles, dataDir) {
+    const templateFilesByDir = sortTemplateFilesByDir(templateFiles);
+
+    for (let dir in templateFilesByDir) {
+        await compileDirTemplates(dir, templateFilesByDir[dir], dataDir);
+    }
+};
+
+async function transform(fileMap, dataDir) {
     const { copyFiles, templateFiles } = fileMap;
 
-    await processTemplateFiles(templateFiles);
+    await processTemplateFiles(templateFiles, dataDir);
     await copyAllFiles(copyFiles);
 };
 

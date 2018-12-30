@@ -6,9 +6,33 @@
 
 const minimist = require('minimist');
 const path = require('path');
+const fs = require('fs');
+const { promisify } = require('util');
 
 const buildFileMap = require('./buildFileMap');
 const transform = require('./transform');
+
+const fsstat = promisify(fs.stat);
+
+async function getTemplateDir(templateDir, templateName = 'default', throwCustomError) {
+    try {
+        const stat = await fsstat(templateDir);
+
+        if (!stat.isDirectory())
+            throw new Error(`${templateDir} is not a directory`);
+
+        return templateDir;
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            if (templateName)
+                return getTemplateDir(path.resolve(defaultDirs.templateDir, templateName));
+            else if (throwCustomError)
+                throw new Error(`${templateDir} is not a directory, and template name (-t or --template) not specified`)
+        }
+
+        throw err;
+    }
+};
 
 async function yass() {
     try {
@@ -24,14 +48,16 @@ async function yass() {
             throw new Error('Missing option: output directory. Please specify -o or --out');
 
         const templateName = (opts.template || opts.t);
+        const dataDir = path.resolve(inDir, './data');
+        const templateDir = await getTemplateDir(path.resolve(inDir, './templates'), templateName, true);
 
         const fileMap = await buildFileMap({
-            inDir,
-            outDir,
-            templateName
+            dataDir,
+            templateDir,
+            outDir
         });
 
-        await transform(fileMap);
+        await transform(fileMap, path.resolve(inDir, 'data'));
         console.log(`Yass-Gen Success! \nNew static site at ${path.resolve(outDir)} generated in ${Date.now()-startTime}ms. \nHave a good day!`);
     } catch (err) {
         console.log('Yass-Gen Failed! \n', err);

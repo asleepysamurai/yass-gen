@@ -18,26 +18,6 @@ const templateFileExtension = 'hbs';
 const templateFileName = '_template_';
 const outputFileExtension = 'html';
 
-async function getTemplateDir(templateDir, templateName = 'default', throwCustomError) {
-    try {
-        const stat = await fsstat(templateDir);
-
-        if (!stat.isDirectory())
-            throw new Error(`${templateDir} is not a directory`);
-
-        return templateDir;
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            if (templateName)
-                return getTemplateDir(path.resolve(defaultDirs.templateDir, templateName));
-            else if (throwCustomError)
-                throw new Error(`${templateDir} is not a directory, and template name (-t or --template) not specified`)
-        }
-
-        throw err;
-    }
-};
-
 async function fileExists(filePath) {
     const stat = await fsstat(filePath);
 
@@ -81,10 +61,7 @@ async function getTemplateFileForPath(fileName, relativePath, templateDir) {
 };
 
 async function buildFileMap(opts) {
-    const { inDir, outDir, templateName } = opts;
-
-    const dataDir = path.resolve(inDir, './data');
-    const templateDir = await getTemplateDir(path.resolve(inDir, './templates'), templateName, true);
+    const { outDir, dataDir, templateDir } = opts;
 
     let fileMap = {
         copyFiles: [],
