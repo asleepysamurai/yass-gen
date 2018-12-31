@@ -41,7 +41,7 @@ async function getTemplateHandlebars(templateDir) {
         const templateHelpers = require(configureScriptPath);
 
         console.log(`Configuring template with configure script at ${configureScriptPath}`);
-        await templateHelpers(Handlebars);
+        await Promise.resolve(templateHelpers(Handlebars));
     } catch (err) {
         if (err.code !== 'MODULE_NOT_FOUND') {
             console.log('Template Error Occurred. Please fix your template.');

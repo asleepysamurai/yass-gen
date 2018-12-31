@@ -100,11 +100,13 @@ async function buildFileMap(opts) {
             const filePath = path.resolve(templateDir, relativePath, item);
 
             if (extension !== templateFileExtension) {
-                fileMap.copyFiles.push({
-                    src: filePath,
-                    dest: path.resolve(outDir, relativePath, item)
-                });
-                return;
+                if (item[0] !== '_') {
+                    fileMap.copyFiles.push({
+                        src: filePath,
+                        dest: path.resolve(outDir, relativePath, item)
+                    });
+                    return;
+                }
             }
         }
     });
