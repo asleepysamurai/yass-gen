@@ -1,5 +1,5 @@
 {
-    "name": "yass",
+    "name": "yass-gen",
     "version": "0.1.1",
     "description": "Yet Another Static Site Generator - Zero Config Static Site Generator",
     "main": "src/index.js",
