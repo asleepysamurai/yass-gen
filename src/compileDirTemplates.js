@@ -108,9 +108,7 @@ async function transformFile(templateFile, dataFile, outFile, globalRefs, rootDi
     outData = minify(outData, {
         minifyCSS: true,
         minifyJS: true,
-        collapseBooleanAttributes: true,
-        collapseWhitespace: true,
-        collapseInlineTagWhitespace: true
+        collapseBooleanAttributes: true
     });
 
     await mkdirp(path.dirname(outFile));
