@@ -1,6 +1,6 @@
 {
     "name": "yass-gen",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Yet Another Static Site Generator - Zero Config Static Site Generator",
     "main": "src/index.js",
     "repository": "git@github.com:asleepysamurai/yass-gen.git",
