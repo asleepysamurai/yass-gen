@@ -102,7 +102,7 @@ async function transformFile(templateFile, dataFile, outFile, globalRefs, rootDi
     const body = markdownToHTML(data.body);
     const refs = await getRefs(dataFile, globalRefs, rootDir);
 
-    const templateData = Object.assign({}, refs, data.attributes || {}, { '_page_content_': body });
+    const templateData = Object.assign({}, refs, data.attributes || {}, { '$pageContent': body });
 
     let outData = template(templateData);
     outData = minify(outData, {
