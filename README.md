@@ -40,7 +40,7 @@ Generally the structure of the template directory should mirror the structure of
 Once Yass-Gen identifies the template to use, it will parse the data file as a YAML FrontMatter file, extract the meta attributes from the FrontMatter, and compile the Handlebars template using that as data.
 
 In addition Yass-Gen also adds a few custom data fields that can be used in your template:
-- `_page_content_` - This will be the main body of the content from the data file, without any FrontMatter. This can be Markdown content also.
+- `$pageContent` - This will be the main body of the content from the data file, without any FrontMatter. This can be Markdown content also.
 - `$dirList` - This will be an array of all the files in the same directory as the data file, with their FrontMatter, $date and $file data.
 - `$file` - This contains information about the data file:
     - `path` - The path to the file, relative to the root of the data dir
@@ -66,7 +66,7 @@ In the above example, the following properties will be passed along when the tem
 {
     "title": "Articles",
     "$dontList": true,
-    "_page_content_": "This page will not appear in $dirList"
+    "$pageContent": "This page will not appear in $dirList"
 }
 ```
 
