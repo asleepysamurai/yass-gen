@@ -47,7 +47,7 @@ async function getTemplateFileForPath(fileName, relativePath, templateDir) {
             break;
         } catch (err) {
             if ((filePaths.length - 1) === i) {
-                const index = relativePath.indexOf(path.sep);
+                const index = relativePath.lastIndexOf(path.sep);
                 if (index == -1)
                     break;
 
