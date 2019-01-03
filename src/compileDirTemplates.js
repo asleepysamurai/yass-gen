@@ -72,13 +72,13 @@ async function readDirItems(dataDir, rootDir) {
 
     for (let file of files) {
         if (file[0] == '_')
-            break;
+            continue;
 
         const filePath = path.resolve(dataDir, file);
 
         const fileStat = await stat(filePath);
         if (!fileStat.isFile())
-            break;
+            continue;
 
         const { attributes = {}, body } = await parseFile(filePath);
 
